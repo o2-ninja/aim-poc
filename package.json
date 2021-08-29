@@ -1,0 +1,23 @@
+{
+  "name": "aim-poc",
+  "version": "1.0.0",
+  "description": "AEM IDS Mediator Proof Of Concept",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/o2-ninja/aim-poc.git"
+  },
+  "author": "o2",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/o2-ninja/aim-poc/issues"
+  },
+  "homepage": "https://github.com/o2-ninja/aim-poc#readme",
+  "devDependencies": {
+    "@adobe/aem-upload": "^1.1.4",
+    "watch": "^0.13.0"
+  }
+}
