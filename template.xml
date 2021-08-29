@@ -1,7 +1,4 @@
 ﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <items>
-	<item>
-    <CF>{{CF_BODY}}</CF>
-    <Image href="file:///{{IMAGE_PATH}}"/>
-	</item>
+  {{ITEMS}}
 </items>
