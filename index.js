@@ -50,6 +50,7 @@ const request = function ( url ) {
   } );
 };
 
+//https://stackoverflow.com/a/30939791
 const download = function( url, saveTo ) {
   return new Promise( ( resolve, reject ) => {
     http.request( url, { 'auth' : 'admin:admin' }, function( response ) {
@@ -69,6 +70,7 @@ const download = function( url, saveTo ) {
 };
 
 let workdir = null;
+let template = null;
 
 Promise.resolve()
   .then( () => {
@@ -77,12 +79,24 @@ Promise.resolve()
         if (err) reject( err );
         console.log(directory);
         workdir = directory;
+        template = path.join( directory, 'template.indd' );
         resolve();
         // Will print something similar to `/tmp/abc123`.
         // A new temporary directory is created within
         // the /tmp directory.
       });
     } );
+  } )
+  .then( () => {
+    const pathJCR = '/content/dam/dynamic-deck-dynamo/templates/simple-template-2020/simple-template-2020.indd';
+    return download(
+      String().concat(
+        'http://',
+        host,
+        pathJCR
+      ),
+      template
+    );
   } )
   .then( () => {
     return request(
