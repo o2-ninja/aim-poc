@@ -18,7 +18,7 @@ if( process.env.AIM_HOST ) {
 Promise.resolve()
   .then( () => {
     return new Promise( ( resolve, reject ) => {
-      const request = http.request(
+      http.request(
         String().concat(
           'http://',
           host,
@@ -44,5 +44,18 @@ Promise.resolve()
         } )
         .on( 'error', ( e ) => { reject( e ); } )
         .end();
-    } );
-} );
+    } )
+      .then( ( json ) => {
+        const tasks = json.entities
+          .filter( ( entity ) => {
+            return entity.rel[ 0 ] === 'child';
+          } )
+          .map( ( child ) => {
+            return child.links[ 0 ].href;
+          } );
+        console.log( tasks );
+        //return new Promise( ( resolve, reject ) => {
+        //  console.log( JSON.stringify( json, null, '  ' ) );
+        //} );
+      } );
+  } );
