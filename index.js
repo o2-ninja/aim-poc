@@ -174,7 +174,7 @@ Promise.resolve()
     //} ) );
   } )
   .then( ( cfs ) => {
-    const template = fs.readFileSync( 'template.xml', 'utf-8' );
+    const templateXML = fs.readFileSync( 'template.xml', 'utf-8' );
     const xmlitems = cfs
       .map( ( cf ) => {
 
@@ -190,7 +190,7 @@ Promise.resolve()
           '</item>\n'
         );
       } );
-    const xml = template.replace( /{{ITEMS}}/, xmlitems );
+    const xml = templateXML.replace( /{{ITEMS}}/, xmlitems );
     //console.log( xml );
     fs.writeFileSync( path.join( workdir, 'data.xml' ), xml );
   } );
