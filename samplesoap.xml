@@ -1,0 +1,13 @@
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:soap="http://ns.adobe.com/InDesign/soap/">
+    <soapenv:Body>
+                         <soap:RunScript>
+                             <runScriptParameters>
+                                 <scriptLanguage>javascript</scriptLanguage>
+                                 <scriptFile>/tmp/sample.jsx</scriptFile>
+                                 <scriptArgs>
+                                    <name>myParameter</name>
+                                    <value>305</value>
+                                 </scriptArgs>
+                             </runScriptParameters>                         </soap:RunScript>
+     </soapenv:Body>
+</soapenv:Envelope>
