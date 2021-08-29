@@ -21,5 +21,8 @@
   "devDependencies": {
     "@adobe/aem-upload": "^1.1.4",
     "watch": "^0.13.0"
+  },
+  "dependencies": {
+    "easy-soap-request": "^4.1.3"
   }
 }
