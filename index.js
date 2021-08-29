@@ -173,6 +173,24 @@ Promise.resolve()
     //  return ( cf.properties.elements ? cf.properties.elements.ProductImage.value : null );
     //} ) );
   } )
-  .then( ( cf ) => {
-    console.log( cf );
+  .then( ( cfs ) => {
+    const template = fs.readFileSync( 'template.xml', 'utf-8' );
+    const xmlitems = cfs
+      .map( ( cf ) => {
+
+        //console.log( cf.properties.elements.main.value );
+        return String().concat(
+          '<item>',
+          '<CFBODY>',
+          cf.properties.elements.main.value.replace( /</g, '{{TAGBEGIN}}' ).replace( />/g, '{{TAGEND}}' ).replace( /&nbsp;/g, '{{nbsp}}' ),
+          '</CFBODY>',
+          '<Image href="file://',
+          cf.properties.imageLocalPath,
+          '"/>',
+          '</item>\n'
+        );
+      } );
+    const xml = template.replace( /{{ITEMS}}/, xmlitems );
+    //console.log( xml );
+    fs.writeFileSync( path.join( workdir, 'data.xml' ), xml );
   } );
