@@ -175,5 +175,4 @@ Promise.resolve()
   } )
   .then( ( cf ) => {
     console.log( cf );
-    console.log( 'workdir=' + workdir );
   } );
