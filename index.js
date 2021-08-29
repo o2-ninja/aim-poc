@@ -10,36 +10,39 @@ if( process.env.AIM_HOST ) {
   host = hostDefault;
 }
 
-console.log( host );
+//console.log( host );
 
 //http://$host/api/assets/we-retail/en/experiences.json
 //
 
-Promise.resolve().then( ( resolve, reject ) => {
-
-  const request = http.request(
-    String().concat(
-      'http://',
-      host,
-      '/api/assets/we-retail/en/experiences.json'
-    ),
-    {
-      'auth': 'admin:admin'
-    },
-    ( response ) => {
-      //console.log('STATUS: ' + response.statusCode);
-      //console.log('HEADERS: ' + JSON.stringify(response.headers));
-      const output = [];
-      response.setEncoding( 'utf8' );
-      response
-        .on( 'data', ( chunk ) => {
-          //console.log( chunk );
-          output.push( chunk );
+Promise.resolve()
+  .then( () => {
+    return new Promise( ( resolve, reject ) => {
+      const request = http.request(
+        String().concat(
+          'http://',
+          host,
+          '/api/assets/we-retail/en/experiences.json'
+        ),
+        {
+          'auth': 'admin:admin'
+        },
+        ( response ) => {
+          //console.log('STATUS: ' + response.statusCode);
+          //console.log('HEADERS: ' + JSON.stringify(response.headers));
+          const output = [];
+          response.setEncoding( 'utf8' );
+          response
+            .on( 'data', ( chunk ) => {
+              //console.log( chunk );
+              output.push( chunk );
+            } )
+            .on( 'end', () => {
+              //console.log( JSON.parse( output.join( '' ) ) );
+              resolve( JSON.parse( output.join( '' ) ) );
+            } );
         } )
-        .on( 'end', () => {
-          console.log( JSON.parse( output.join( '' ) ) );
-        } );
-    } )
-    .end();
-
+        .on( 'error', ( e ) => { reject( e ); } )
+        .end();
+    } );
 } );
