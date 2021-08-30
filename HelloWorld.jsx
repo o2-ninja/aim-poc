@@ -1,3 +1,25 @@
+
+if( !console ) {
+  var logfile = new File( Folder.temp + '/jsx.log' );
+  logfile.open( 'a', 'TEXT' );
+  logfile.lineFeed = 'Unix';
+  /**
+   * acts like console in node.js
+   *
+   * @returns {undefined}
+   */
+  const console = {
+    log   : function( arg ) {
+      logfile.writeln( arg );
+    },
+    error : function( arg ) {
+      logfile.writeln( arg );
+    }
+  };
+}
+
+console.log( 'hoge' );
+
 /**
  * XML を import する wrapper
  *
@@ -44,11 +66,10 @@ var myTextFrame = myPage.textFrames.add();
 //Specify the size and shape of the text frame.
 myTextFrame.geometricBounds = ["6p0", "6p0", "18p0", "18p0"];
 //Enter text in the text frame.
-myTextFrame.contents = "Hello World!";
 
 //Save the document (fill in a valid file path).
 var myFile = new File(app.scriptArgs.get("dest") + "/HelloWorld.indd");
-var result = "saved to:  " + myFile.fullName;
+var result = "saved to:  " + myFile.fullName + ' ' + Folder.temp + ' ' + logfile;
 if(!myFile.parent.exists && !myFile.parent.create()) {
 	result = "Not saved.  Unable to create the folder:  " + myFile.parent.fullName;
 } else {

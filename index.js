@@ -17,8 +17,6 @@ if( process.env.AIM_HOST ) {
   host = hostDefault;
 }
 
-//console.log( host );
-
 //http://$host/api/assets/we-retail/en/experiences.json
 //
 //
@@ -212,7 +210,6 @@ Promise.resolve()
           'Content-Type': 'text/xml;charset=UTF-8',
           'soapAction': 'https://graphical.weather.gov/xml/DWMLgen/wsdl/ndfdXML.wsdl#LatLonListZipCode',
         };
-        //console.log( path.join( path.resolve( __dirname ), 'HelloWorld.jsx' ) );
         const xml = fs.readFileSync('samplesoap.xml', 'utf-8')
           .replace( /{{WORKDIR}}/, workdir )
           .replace( /{{EXTENDSCRIPT}}/, path.join( path.resolve( __dirname ), 'HelloWorld.jsx' ) );
