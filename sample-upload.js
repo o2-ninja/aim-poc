@@ -54,13 +54,13 @@ upload.uploadFiles(options)
 
         // configure options to use basic authentication
         const options = new FileSystemUploadOptions()
-            .withUrl('http://localhost:4502/content/dam/we-retail/en/experiences/destination')
+//            .withUrl('http://localhost:4502/content/dam/we-retail/en/experiences/destination')
+            .withUrl('http://localhost:4502/content/dam/target-folder')
             .withBasicAuth('admin:admin');
 
         // upload a single asset and all assets in a given folder
         const fileUpload = new FileSystemUpload();
         await fileUpload.upload(options, [
-          '/var/folders/xz/w2_8ksms6p957wp02sd63yrm0000gq/T/RScU8U/camp-fire.jpg',
-          '/var/folders/xz/w2_8ksms6p957wp02sd63yrm0000gq/T/dcmBpe/data.xml'
+          '/var/folders/xz/w2_8ksms6p957wp02sd63yrm0000gq/T/dcmBpe'
         ] );
       } )();
