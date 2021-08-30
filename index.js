@@ -216,7 +216,7 @@ Promise.resolve()
 
         // usage of module
         (async () => {
-          const { response } = await soapRequest({ url: url, headers: sampleHeaders, xml: xml, timeout: 1000 }); // Optional timeout parameter(milliseconds)
+          const { response } = await soapRequest({ url: url, headers: sampleHeaders, xml: xml, timeout: 60000 }); // Optional timeout parameter(milliseconds)
           const { headers, body, statusCode } = response;
           console.log(headers);
           console.log(body);

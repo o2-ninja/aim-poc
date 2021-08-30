@@ -28,10 +28,9 @@ console.log( 'hoge' );
  * @param   {Object}      textFrame   <a href="http://jongware.mit.edu/idcs6js/pc_TextFrame.html">textFrame</a>
  * @returns {undefined}
  */
-/**
-function importXML( path, textFrame ) {
+function importXML( doc, xml ) {
 
-  const doc = textFrame.parent.parent;
+  //const doc = textFrame.parent.parent;
 
   doc.xmlImportPreferences.properties = {
     createLinkToXML: false,
@@ -41,41 +40,54 @@ function importXML( path, textFrame ) {
     ignoreWhitespace: false,
     removeUnmatchedExisting: false,
     importToSelected: false,
-    importStyle: enum.XMLImportStyles.MERGE_IMPORT,
+    importStyle: XMLImportStyles.MERGE_IMPORT,
     allowTransform: false,
     transformFilename: 1483961208,
     //transformParameters: ,
     importCALSTables: true
   };
 
-  doc.importXML( File( path ) );
-  textFrame.placeXML( doc.xmlElements );
+  doc.importXML( xml );
+  //textFrame.placeXML( doc.xmlElements );
   doc.recompose();
 
 
 }
-**/
 
 //HelloWorld.jsx
 //Create a new document.
-var myDocument = app.documents.add();
-//Get a reference to the first page.
-var myPage = myDocument.pages.item(0);
-//Create a text frame.
-var myTextFrame = myPage.textFrames.add();
-//Specify the size and shape of the text frame.
-myTextFrame.geometricBounds = ["6p0", "6p0", "18p0", "18p0"];
+//var doc = app.documents.add();
+////Get a reference to the first page.
+//var myPage = doc.pages.item(0);
+////Create a text frame.
+//var myTextFrame = myPage.textFrames.add();
+////Specify the size and shape of the text frame.
+//myTextFrame.geometricBounds = ["6p0", "6p0", "18p0", "18p0"];
 //Enter text in the text frame.
 
+var mydoc = app.open( File( app.scriptArgs.get("dest") + '/template.idml' ) );
+
+importXML( mydoc, File( app.scriptArgs.get("dest") + '/data.xml' ) );
+
 //Save the document (fill in a valid file path).
-var myFile = new File(app.scriptArgs.get("dest") + "/HelloWorld.indd");
-var result = "saved to:  " + myFile.fullName + ' ' + Folder.temp + ' ' + logfile;
-if(!myFile.parent.exists && !myFile.parent.create()) {
-	result = "Not saved.  Unable to create the folder:  " + myFile.parent.fullName;
-} else {
-	myDocument = myDocument.save(myFile);
-}
+//var myFile = new File(app.scriptArgs.get("dest") + "/HelloWorld.indd");
+//var result = "saved to:  " + myFile.fullName + ' ' + Folder.temp + ' ' + logfile;
+//if(!myFile.parent.exists && !myFile.parent.create()) {
+//	result = "Not saved.  Unable to create the folder:  " + myFile.parent.fullName;
+//} else {
+//	doc = doc.save(myFile);
+//}
 //Close the document.
-myDocument.close();
+var saved = mydoc.save( new File( app.scriptArgs.get("dest") + '/artifact.indd' ) );
+mydoc.close();
+
+var result = saved.toString();
+
+var savedFlag = new File( app.scriptArgs.get("dest") + '/confirmed-save' );
+savedFlag.open( 'w', 'TEXT' );
+savedFlag.lineFeed = 'Unix';
+savedFlag.write( 'done' );
+savedFlag.close();
 
 result;
+
