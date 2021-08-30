@@ -7,8 +7,8 @@ const tmpdir = require( 'os' ).tmpdir;
 const mkdtemp = require( 'fs' ).mkdtemp;
 const sep = require( 'path' ).sep;
 
-//const hostDefault = 'localhost:4502';
-const hostDefault = '192.168.100.3:4502';
+const hostDefault = 'localhost:4502';
+//const hostDefault = '192.168.100.3:4502';
 let host = null;
 
 if( process.env.AIM_HOST ) {
@@ -79,7 +79,7 @@ Promise.resolve()
         if (err) reject( err );
         console.log(directory);
         workdir = directory;
-        template = path.join( directory, 'template.indd' );
+        template = path.join( directory, 'template.idml' );
         resolve();
         // Will print something similar to `/tmp/abc123`.
         // A new temporary directory is created within
@@ -88,7 +88,7 @@ Promise.resolve()
     } );
   } )
   .then( () => {
-    const pathJCR = '/content/dam/dynamic-deck-dynamo/templates/simple-template-2020/simple-template-2020.indd';
+    const pathJCR = '/content/dam/we-retail/en/experiences/template/template.idml';
     return download(
       String().concat(
         'http://',
@@ -125,6 +125,10 @@ Promise.resolve()
       return prev.concat( json.entities );
     }, [] )
       .filter( ( entity ) => {
+        if( ! entity ) {
+          return false;
+        }
+
         if( ! entity.properties.elements ) {
           return false;
         }
@@ -174,23 +178,53 @@ Promise.resolve()
     //} ) );
   } )
   .then( ( cfs ) => {
-    const templateXML = fs.readFileSync( 'template.xml', 'utf-8' );
-    const xmlitems = cfs
-      .map( ( cf ) => {
+    return new Promise( ( resolve, reject ) => {
+      const templateXML = fs.readFileSync( 'template.xml', 'utf-8' );
+      const xmlitems = cfs
+        .map( ( cf ) => {
 
-        //console.log( cf.properties.elements.main.value );
-        return String().concat(
-          '<item>',
-          '<CFBODY>',
-          cf.properties.elements.main.value.replace( /</g, '{{TAGBEGIN}}' ).replace( />/g, '{{TAGEND}}' ).replace( /&nbsp;/g, '{{nbsp}}' ),
-          '</CFBODY>',
-          '<Image href="file://',
-          cf.properties.imageLocalPath,
-          '"/>',
-          '</item>\n'
-        );
+          //console.log( cf.properties.elements.main.value );
+          return String().concat(
+            '<item>',
+            '<CFBODY>',
+            cf.properties.elements.main.value.replace( /</g, '{{TAGBEGIN}}' ).replace( />/g, '{{TAGEND}}' ).replace( /&nbsp;/g, '{{nbsp}}' ),
+            '</CFBODY>',
+            '<Image href="file://',
+            cf.properties.imageLocalPath,
+            '"/>',
+            '</item>\n'
+          );
+        } );
+      const xml = templateXML.replace( /{{ITEMS}}/, xmlitems );
+      //console.log( xml );
+      fs.writeFileSync( path.join( workdir, 'data.xml' ), xml );
+      resolve();
+    } )
+    .then( () => {
+      return new Promise( ( resolve, reject ) => {
+
+        const soapRequest = require('easy-soap-request');
+
+        // example data
+        const url = 'http://192.168.100.3:8080';
+        const sampleHeaders = {
+          'user-agent': 'sampleTest',
+          'Content-Type': 'text/xml;charset=UTF-8',
+          'soapAction': 'https://graphical.weather.gov/xml/DWMLgen/wsdl/ndfdXML.wsdl#LatLonListZipCode',
+        };
+        //console.log( path.join( path.resolve( __dirname ), 'HelloWorld.jsx' ) );
+        const xml = fs.readFileSync('samplesoap.xml', 'utf-8')
+          .replace( /{{WORKDIR}}/, workdir )
+          .replace( /{{EXTENDSCRIPT}}/, path.join( path.resolve( __dirname ), 'HelloWorld.jsx' ) );
+
+        // usage of module
+        (async () => {
+          const { response } = await soapRequest({ url: url, headers: sampleHeaders, xml: xml, timeout: 1000 }); // Optional timeout parameter(milliseconds)
+          const { headers, body, statusCode } = response;
+          console.log(headers);
+          console.log(body);
+          console.log(statusCode);
+        })();
       } );
-    const xml = templateXML.replace( /{{ITEMS}}/, xmlitems );
-    //console.log( xml );
-    fs.writeFileSync( path.join( workdir, 'data.xml' ), xml );
+    } );
   } );

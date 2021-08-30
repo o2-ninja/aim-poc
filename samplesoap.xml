@@ -3,10 +3,14 @@
                          <soap:RunScript>
                              <runScriptParameters>
                                  <scriptLanguage>javascript</scriptLanguage>
-                                 <scriptFile>/tmp/sample.jsx</scriptFile>
+                                 <scriptFile>{{EXTENDSCRIPT}}</scriptFile>
                                  <scriptArgs>
                                     <name>myParameter</name>
                                     <value>305</value>
+                                 </scriptArgs>
+                                 <scriptArgs>
+                                    <name>dest</name>
+                                    <value>{{WORKDIR}}</value>
                                  </scriptArgs>
                              </runScriptParameters>                         </soap:RunScript>
      </soapenv:Body>
