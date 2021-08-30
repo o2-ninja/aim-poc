@@ -221,7 +221,77 @@ Promise.resolve()
           console.log(headers);
           console.log(body);
           console.log(statusCode);
+          while( true ) {
+            if( fs.existsSync( path.join( workdir, '/confirmed-save' ) ) ) {
+              resolve();
+              break;
+            }
+          }
         })();
       } );
+    } )
+    .then( () => {
+      /**
+      const DirectBinary = require('@adobe/aem-upload');
+
+      // URL to the folder in AEM where assets will be uploaded. Folder
+      // must already exist.
+      const targetUrl = 'http://localhost:4502/content/dam/we-retail/en/experiences/destination';
+
+      // list of all local files that will be uploaded.
+      const uploadFiles = [
+          {
+              fileName: 'artifact.indd', // name of the file as it will appear in AEM
+              fileSize: 1024, // total size, in bytes, of the file
+              filePath: path.join( workdir, 'artifact.indd' ) // Full path to the local file
+          },
+      ];
+
+      const upload = new DirectBinary.DirectBinaryUpload();
+      const options = new DirectBinary.DirectBinaryUploadOptions()
+          .withUrl(targetUrl)
+          .withUploadFiles(uploadFiles)
+          .withBasicAuth('admin:admin');
+
+      // this call will upload the files. The method returns a Promise, which will be resolved
+      // when all files have uploaded.
+      upload.uploadFiles(options)
+          .then(result => {
+            console.log( 'OK uploaded' );
+              // "result" contains various information about the upload process, including
+              // performance metrics and errors that may have occurred for individual files
+
+              // at this point, assuming no errors, there will be two new assets in AEM:
+              //  http://localhost:4502/content/dam/target/file1.jpg
+              //  http://localhost:4502/content/dam/target/file2.jpg
+          })
+          .catch(err => {
+            console.error( err );
+              // the Promise will reject if something causes the upload process to fail at
+              // a high level. Note that individual file failures will NOT trigger this
+
+              // "err" will be an instance of UploadError. See "Error Handling"
+              // for more information
+          });
+      **/
+      ( async() => {
+        const {
+            FileSystemUploadOptions,
+            FileSystemUpload
+        } = require('@adobe/aem-upload');
+
+        // configure options to use basic authentication
+        const options = new FileSystemUploadOptions()
+            .withUrl('http://localhost:4502/content/dam/we-retail/en/experiences/destination')
+            .withBasicAuth('admin:admin');
+
+        console.log( fs.existsSync( path.join( workdir, 'artifact.indd' ) ) );
+        // upload a single asset and all assets in a given folder
+        const fileUpload = new FileSystemUpload();
+        await fileUpload.upload(options,
+          path.join( workdir, 'artifact.indd' )
+        )
+        .catch( ( e ) => { console.log( e ); } ) ;
+      } )();
     } );
   } );
