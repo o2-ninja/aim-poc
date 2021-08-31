@@ -17,6 +17,11 @@ if( process.env.AIM_HOST ) {
   host = hostDefault;
 }
 
+const hostURL = String().concat(
+  'http://',
+  host,
+);
+
 const ids = 'http://localhost:8080'
 
 const request = function ( url ) {
@@ -217,7 +222,8 @@ Promise.resolve()
           'curl -u "admin:admin" -X POST -F file=@"',
           path.join( workdir, 'artifact.indd' ),
           '" ',
-          'http://localhost:4502/content/dam/we-retail/en/experiences/destination.createasset.html'
+          hostURL,
+          '/content/dam/we-retail/en/experiences/destination.createasset.html'
         );
 
         //https://helpx.adobe.com/experience-manager/kb/common-AEM-Curl-commands.html
