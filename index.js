@@ -222,6 +222,7 @@ Promise.resolve()
         exec( command , (error, stdout, stderr) => {
             if (error) {
                 console.log(`error: ${error.message}`);
+                reject();
                 return;
             }
             if (stderr) {
