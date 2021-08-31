@@ -19,7 +19,6 @@
   },
   "homepage": "https://github.com/o2-ninja/aim-poc#readme",
   "devDependencies": {
-    "@adobe/aem-upload": "^1.1.4",
     "watch": "^0.13.0"
   },
   "dependencies": {
