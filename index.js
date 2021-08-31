@@ -245,5 +245,8 @@ Promise.resolve()
     } )
     .then( () => {
       console.log( workdir );
+    } )
+    .catch( ( e ) => {
+      console.error( e );
     } );
   } );
