@@ -17,6 +17,8 @@ if( process.env.AIM_HOST ) {
   host = hostDefault;
 }
 
+const ids = 'http://localhost:8080'
+
 const request = function ( url ) {
   return new Promise( ( resolve, reject ) => {
     http.request(
@@ -181,7 +183,7 @@ Promise.resolve()
         const soapRequest = require('easy-soap-request');
 
         // example data
-        const url = 'http://192.168.100.3:8080';
+        const url = ids;
         const sampleHeaders = {
           'user-agent': 'sampleTest',
           'Content-Type': 'text/xml;charset=UTF-8',
