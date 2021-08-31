@@ -184,12 +184,12 @@ Promise.resolve()
           //console.log( cf.properties.elements.main.value );
           return String().concat(
             '<item>',
-            '<CFBODY>',
-            cf.properties.elements.main.value.replace( /</g, '{{TAGBEGIN}}' ).replace( />/g, '{{TAGEND}}' ).replace( /&nbsp;/g, '{{nbsp}}' ),
-            '</CFBODY>',
             '<Image href="file://',
             cf.properties.imageLocalPath,
             '"/>',
+            '<CFBODY>',
+            cf.properties.elements.main.value.replace( /</g, '{{TAGBEGIN}}' ).replace( />/g, '{{TAGEND}}' ).replace( /&nbsp;/g, '{{nbsp}}' ),
+            '</CFBODY>',
             '</item>\n'
           );
         } );
