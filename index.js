@@ -131,29 +131,29 @@ Promise.resolve()
           return false;
         }
 
-        if( ! entity.properties.elements.ProductImage ) {
+        if( ! entity.properties.elements.Image ) {
           return false;
         }
 
-        if( ! entity.properties.elements.ProductImage.value ) {
+        if( ! entity.properties.elements.Image.value ) {
           return false;
         }
         return true;
       } );
     //console.log( JSON.stringify( jsons, null, '  ' ) );
-    //console.log( cfs.forEach( ( elm ) => { console.log( elm.properties.elements.ProductImage.value ); } ) );
+    //console.log( cfs.forEach( ( elm ) => { console.log( elm.properties.elements.Image.value ); } ) );
     const tasks = cfs
       .map( ( cf ) => {
         return download(
           String().concat(
             'http://',
             host,
-            cf.properties.elements.ProductImage.value
+            cf.properties.elements.Image.value
           ),
           String().concat(
             workdir,
             '/',
-            path.basename( cf.properties.elements.ProductImage.value )
+            path.basename( cf.properties.elements.Image.value )
           )
         );
       } );
@@ -172,7 +172,7 @@ Promise.resolve()
       } );
     //download( imageurl, '/tmp/image2.png' );
     //console.log( cfs.map( ( cf ) => {
-    //  return ( cf.properties.elements ? cf.properties.elements.ProductImage.value : null );
+    //  return ( cf.properties.elements ? cf.properties.elements.Image.value : null );
     //} ) );
   } )
   .then( ( cfs ) => {
@@ -231,67 +231,30 @@ Promise.resolve()
       } );
     } )
     .then( () => {
-      /**
-      const DirectBinary = require('@adobe/aem-upload');
 
-      // URL to the folder in AEM where assets will be uploaded. Folder
-      // must already exist.
-      const targetUrl = 'http://localhost:4502/content/dam/we-retail/en/experiences/destination';
+      return new Promise( ( resolve, reject ) => {
+        const { exec } = require("child_process");
 
-      // list of all local files that will be uploaded.
-      const uploadFiles = [
-          {
-              fileName: 'artifact.indd', // name of the file as it will appear in AEM
-              fileSize: 1024, // total size, in bytes, of the file
-              filePath: path.join( workdir, 'artifact.indd' ) // Full path to the local file
-          },
-      ];
+        const command = String().concat(
+          'curl -u "admin:admin" -X POST -F file=@"',
+          path.join( workdir, 'artifact.indd' ),
+          '" ',
+          'http://localhost:4502/content/dam/we-retail/en/experiences/destination.createasset.html'
+        );
 
-      const upload = new DirectBinary.DirectBinaryUpload();
-      const options = new DirectBinary.DirectBinaryUploadOptions()
-          .withUrl(targetUrl)
-          .withUploadFiles(uploadFiles)
-          .withBasicAuth('admin:admin');
-
-      // this call will upload the files. The method returns a Promise, which will be resolved
-      // when all files have uploaded.
-      upload.uploadFiles(options)
-          .then(result => {
-            console.log( 'OK uploaded' );
-              // "result" contains various information about the upload process, including
-              // performance metrics and errors that may have occurred for individual files
-
-              // at this point, assuming no errors, there will be two new assets in AEM:
-              //  http://localhost:4502/content/dam/target/file1.jpg
-              //  http://localhost:4502/content/dam/target/file2.jpg
-          })
-          .catch(err => {
-            console.error( err );
-              // the Promise will reject if something causes the upload process to fail at
-              // a high level. Note that individual file failures will NOT trigger this
-
-              // "err" will be an instance of UploadError. See "Error Handling"
-              // for more information
-          });
-      **/
-      ( async() => {
-        const {
-            FileSystemUploadOptions,
-            FileSystemUpload
-        } = require('@adobe/aem-upload');
-
-        // configure options to use basic authentication
-        const options = new FileSystemUploadOptions()
-            .withUrl('http://localhost:4502/content/dam/we-retail/en/experiences/destination')
-            .withBasicAuth('admin:admin');
-
-        console.log( fs.existsSync( path.join( workdir, 'artifact.indd' ) ) );
-        // upload a single asset and all assets in a given folder
-        const fileUpload = new FileSystemUpload();
-        await fileUpload.upload(options,
-          path.join( workdir, 'artifact.indd' )
-        )
-        .catch( ( e ) => { console.log( e ); } ) ;
-      } )();
+        //https://helpx.adobe.com/experience-manager/kb/common-AEM-Curl-commands.html
+        exec( command , (error, stdout, stderr) => {
+            if (error) {
+                console.log(`error: ${error.message}`);
+                return;
+            }
+            if (stderr) {
+                console.log(`stderr: ${stderr}`);
+                return;
+            }
+            console.log(`stdout: ${stdout}`);
+            resolve();
+        });
+      } );
     } );
   } );
