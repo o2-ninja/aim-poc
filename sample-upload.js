@@ -1,66 +1,118 @@
+const fs = require( 'fs' );
+const http = require( 'http' );
 /**
-const DirectBinary = require('@adobe/aem-upload');
+var formData = require('form-data')();
 
-// URL to the folder in AEM where assets will be uploaded. Folder
-// must already exist.
-const targetUrl = 'http://localhost:4502/content/dam/we-retail/en/experiences/destination';
+var binaryFilename = '/var/folders/xz/w2_8ksms6p957wp02sd63yrm0000gq/T/dcmBpe/camp-fire.jpg';
 
-// list of all local files that will be uploaded.
-const uploadFiles = [
-    {
-        fileName: 'file1.jpg', // name of the file as it will appear in AEM
-        fileSize: 1024, // total size, in bytes, of the file
-        filePath: '/var/folders/xz/w2_8ksms6p957wp02sd63yrm0000gq/T/RScU8U/camp-fire.jpg' // Full path to the local file
-    },
-    {
-        fileName: 'file2.jpg',
-        fileSize: 512,
-        filePath: '/var/folders/xz/w2_8ksms6p957wp02sd63yrm0000gq/T/RScU8U/fly-fishing-the-amazon-1.jpg'
-    }
-];
-
-const upload = new DirectBinary.DirectBinaryUpload();
-const options = new DirectBinary.DirectBinaryUploadOptions()
-    .withUrl(targetUrl)
-    .withBasicAuth('admin:admin')
-    .withUploadFiles(uploadFiles);
-
-// this call will upload the files. The method returns a Promise, which will be resolved
-// when all files have uploaded.
-upload.uploadFiles(options)
-    .then(result => {
-      console.log( JSON.stringify( result, null, '  ' ) );
-        // "result" contains various information about the upload process, including
-        // performance metrics and errors that may have occurred for individual files
-
-        // at this point, assuming no errors, there will be two new assets in AEM:
-        //  http://localhost:4502/content/dam/target/file1.jpg
-        //  http://localhost:4502/content/dam/target/file2.jpg
-    })
-    .catch(err => {
-      console.error( err );
-        // the Promise will reject if something causes the upload process to fail at
-        // a high level. Note that individual file failures will NOT trigger this
-
-        // "err" will be an instance of UploadError. See "Error Handling"
-        // for more information
+let request = http.request({
+    host: 'localhost',
+    port: '4502',
+    path: '/content/dam/we-retail/en/experiences/destination.createasset.html',
+    method: 'POST',
+    headers: formData.getHeaders()
+}, (res) => {
+    res.on('data', (data) => {
+       console.log('Data received: ', data.toString()); 
     });
+});
+
+request.on("error", (e) => {
+    console.error(e);
+});
+
+formData.append('file', require("fs").createReadStream(binaryFilename));
+formData.pipe(request);
 **/
-      ( async() => {
-        const {
-            FileSystemUploadOptions,
-            FileSystemUpload
-        } = require('@adobe/aem-upload');
 
-        // configure options to use basic authentication
-        const options = new FileSystemUploadOptions()
-//            .withUrl('http://localhost:4502/content/dam/we-retail/en/experiences/destination')
-            .withUrl('http://localhost:4502/content/dam/target-folder')
-            .withBasicAuth('admin:admin');
+const { exec } = require("child_process");
 
-        // upload a single asset and all assets in a given folder
-        const fileUpload = new FileSystemUpload();
-        await fileUpload.upload(options, [
-          '/var/folders/xz/w2_8ksms6p957wp02sd63yrm0000gq/T/dcmBpe'
-        ] );
-      } )();
+//https://helpx.adobe.com/experience-manager/kb/common-AEM-Curl-commands.html
+exec( 'curl -u "admin:admin" -X POST -F file=@"/var/folders/xz/w2_8ksms6p957wp02sd63yrm0000gq/T/dcmBpe/artifact.indd" http://localhost:4502/content/dam/we-retail/en/experiences/destination.createasset.html' , (error, stdout, stderr) => {
+    if (error) {
+        console.log(`error: ${error.message}`);
+        return;
+    }
+    if (stderr) {
+        console.log(`stderr: ${stderr}`);
+        return;
+    }
+    console.log(`stdout: ${stdout}`);
+});
+
+
+/**
+const formData = new FormData();
+
+const req = http.request('http://localhost:4502/content/dam/we-retail/en/experiences/destination.createasset.html', function(response) {
+  formData.append('file', '/var/folders/xz/w2_8ksms6p957wp02sd63yrm0000gq/T/dcmBpe/camp-fire.jpg' );
+  console.log( response.statusCode  );
+});
+
+req.end();
+*/
+/**
+  const req =  http.request(
+    new URL( "http://localhost:4502/content/dam/we-retail/en/experiences/destination.createasset.html" ), 
+    {
+      method: "POST",
+      auth: "admin:admin"
+    },
+    ( res ) => {
+      console.log( res.statusCode );
+    } );
+
+req.on('error', error => {
+  console.error(error)
+});
+
+const data = fs.readFileSync( '/var/folders/xz/w2_8ksms6p957wp02sd63yrm0000gq/T/dcmBpe/camp-fire.jpg' );
+
+req.write(data);
+req.end();
+/**
+const req = http.request(options, res => {
+  console.log(`statusCode: ${res.statusCode}`)
+
+  res.on('data', d => {
+    process.stdout.write(d);
+  });
+});
+
+fs.createReadStream('/var/folders/xz/w2_8ksms6p957wp02sd63yrm0000gq/T/dcmBpe/camp-fire.jpg')
+  .pipe(
+    http.request( new URL( "http://localhost:4502/content/dam/we-retail/en/experiences/destination.createasset.html" ), {
+      method: "POST",
+      auth: "admin:admin"
+    })
+  );
+
+/**
+const data = fs.readFileSync( '/var/folders/xz/w2_8ksms6p957wp02sd63yrm0000gq/T/dcmBpe/camp-fire.jpg' );
+
+const options = {
+  hostname: 'localhost',
+  port: 4502,
+  path: '/content/dam/we-retail/en/experiences/destination.createasset.html',
+  method: 'POST',
+  headers: {
+    auth: "admin:admin",
+    'Content-Length': data.length
+  }
+};
+
+const req = http.request(options, res => {
+  console.log(`statusCode: ${res.statusCode}`)
+
+  res.on('data', d => {
+    process.stdout.write(d);
+  });
+});
+
+req.on('error', error => {
+  console.error(error)
+});
+
+req.write(data);
+req.end();
+**/
