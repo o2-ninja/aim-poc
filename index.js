@@ -17,10 +17,6 @@ if( process.env.AIM_HOST ) {
   host = hostDefault;
 }
 
-//http://$host/api/assets/we-retail/en/experiences.json
-//
-//
-
 const request = function ( url ) {
   return new Promise( ( resolve, reject ) => {
     http.request(
@@ -29,17 +25,13 @@ const request = function ( url ) {
         'auth': 'admin:admin'
       },
       ( response ) => {
-        //console.log('STATUS: ' + response.statusCode);
-        //console.log('HEADERS: ' + JSON.stringify(response.headers));
         const output = [];
         response.setEncoding( 'utf8' );
         response
           .on( 'data', ( chunk ) => {
-            //console.log( chunk );
             output.push( chunk );
           } )
           .on( 'end', () => {
-            //console.log( JSON.parse( output.join( '' ) ) );
             resolve( JSON.parse( output.join( '' ) ) );
           } );
       } )
@@ -75,13 +67,11 @@ Promise.resolve()
     return new Promise( ( resolve, reject ) => {
       mkdtemp(`${tmpdir}${sep}`, (err, directory) => {
         if (err) reject( err );
-        console.log(directory);
+
+        //console.log(directory);
         workdir = directory;
         template = path.join( directory, 'template.idml' );
         resolve();
-        // Will print something similar to `/tmp/abc123`.
-        // A new temporary directory is created within
-        // the /tmp directory.
       });
     } );
   } )
@@ -114,9 +104,6 @@ Promise.resolve()
         return request( child.links[ 0 ].href );
       } );
     return Promise.all( tasks );
-    //return new Promise( ( resolve, reject ) => {
-    //  console.log( JSON.stringify( json, null, '  ' ) );
-    //} );
   } )
   .then( ( jsons ) => {
     const cfs = jsons.reduce( ( prev, json ) => {
@@ -140,8 +127,6 @@ Promise.resolve()
         }
         return true;
       } );
-    //console.log( JSON.stringify( jsons, null, '  ' ) );
-    //console.log( cfs.forEach( ( elm ) => { console.log( elm.properties.elements.Image.value ); } ) );
     const tasks = cfs
       .map( ( cf ) => {
         return download(
@@ -159,21 +144,15 @@ Promise.resolve()
       } );
     return Promise.all( tasks )
       .then( ( vals ) => {
-        //console.log( vals );
         return new Promise( ( resolve, reject ) => {
           const icfs = cfs
             .map( ( cf, index ) => {
               cf.properties.imageLocalPath = vals[ index ];
               return cf;
             } );
-          //console.log( icfs );
           resolve( icfs );
         } );
       } );
-    //download( imageurl, '/tmp/image2.png' );
-    //console.log( cfs.map( ( cf ) => {
-    //  return ( cf.properties.elements ? cf.properties.elements.Image.value : null );
-    //} ) );
   } )
   .then( ( cfs ) => {
     return new Promise( ( resolve, reject ) => {
@@ -181,7 +160,6 @@ Promise.resolve()
       const xmlitems = cfs
         .map( ( cf ) => {
 
-          //console.log( cf.properties.elements.main.value );
           return String().concat(
             '<item>',
             '<Image href="file://',
@@ -194,7 +172,6 @@ Promise.resolve()
           );
         } );
       const xml = templateXML.replace( /{{ITEMS}}/, xmlitems );
-      //console.log( xml );
       fs.writeFileSync( path.join( workdir, 'data.xml' ), xml );
       resolve();
     } )
@@ -231,7 +208,6 @@ Promise.resolve()
       } );
     } )
     .then( () => {
-
       return new Promise( ( resolve, reject ) => {
         const { exec } = require("child_process");
 
@@ -250,11 +226,15 @@ Promise.resolve()
             }
             if (stderr) {
                 console.log(`stderr: ${stderr}`);
+                resolve();
                 return;
             }
             console.log(`stdout: ${stdout}`);
             resolve();
         });
       } );
+    } )
+    .then( () => {
+      console.log( workdir );
     } );
   } );
